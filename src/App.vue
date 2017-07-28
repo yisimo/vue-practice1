@@ -1,47 +1,117 @@
 <template>
   <div>
-    <ul>
+    <!--<ul>
       <li v-for="(item,index) in list" list :class="{odd: index % 2}">{{ item.name }} {{ item.price }} 索引值为：{{ index }}</li>
     </ul>
     <button @click="addItem">addItem</button>
-    <button @click="setItem">setItem</button>
-    <a :href="link" :class="[classA,classB]" :style="linkCss">BaiDu</a>
-    <a v-if="partA">partA</a>
+    <button @click="setItem">setItem</button>-->
+
+    <!--<a :href="link" :class="[classA,classB]" :style="linkCss">BaiDu</a>-->
+
+   <!-- <a v-if="partA">partA</a>
     <a v-else>no data</a>
+    <button @click="toggle">toggle</button>-->
    <!-- <a v-show="!partA">partB</a>-->
-    <button @click="toggle">toggle</button>
-    <input type="text" @keydown.enter="onKeyDown" placeholder="input something">
-    <com-a @my-event="getMyEvent"></com-a>
-    <input type="text" v-model="myValue">{{ myValue }}
-    <input type="radio" v-model="myBox" value="apple">
+
+    <!--<input type="text" @keydown.enter="onKeyDown" placeholder="input something">-->
+
+   <!-- <com-a @my-event="getMyEvent" :number-to-do="myValue">
+      <p slot="header">xxxx header</p>
+      <p>content</p>
+      <p slot="footer">yyyy footer</p>
+    </com-a>
+    <p :is="comToRender"></p>
+    <input type="text" v-model="myValue">{{ myValue }}-->
+
+    <!--<input type="radio" v-model="myBox" value="apple">
     <input type="radio" v-model="myBox" value="banana">
-    <input type="radio" v-model="myBox" value="orange">{{ myBox }}
-    <select v-model="selection">
+    <input type="radio" v-model="myBox" value="orange">{{ myBox }}-->
+
+   <!-- <select v-model="selection">
       <option v-for="item in selectionOption" :value="item.value">{{ item.text }}</option>
     </select>
-    {{ selection }}
-<!--    <ul>
+    {{ selection }}-->
+
+    <!--<ul>
       <li v-for="(value,key) in objList">{{ key + ':' + value }}</li>
     </ul>-->
-  <!--  <input type="text" v-model.number="myVal">
-    <com-a :my-value="myVal" @my-event="getMyEvent">
-      <p slot="header">xxx header</p>
-      <p slot="footer">xxx footer</p>
-    </com-a>-->
-    <!--    <com-a v-for="(value,key) in objList" :key="key"> {{ value }} </com-a>-->
+
+    <!--<com-a v-for="(value,key) in objList" :key="key"> {{ value }} </com-a>-->
+
+    <!--css-transition-->
+
+    <!--<button @click="toggleCom">Toggle</button>
+    <div class="transbox">
+      <transition name="fade" mode="out-in">
+        <p :is="currentView"></p>
+      </transition>
+    </div>-->
+
+    <!--js-transition-->
+    <!--<button class="transbox" @click="show = !show">toggle</button>
+    <div class="transbox">
+      <transition
+        @before-enter="beforeEnter"
+        @enter="enter"
+        @leave="leave"
+        :css="false">
+        <p class="animate-p" v-show="show">I am show</p>
+      </transition>
+    </div>-->
+
+   <!-- directives 局部自定义指令-->
+    <!--<p v-color="'red'">Hello World</p>-->
+
+    <!--<input type="text" v-focus>-->
+
+    <!--vue-router-->
+    <!--<transition name="fade">
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
+    <router-link :to="{name:'applePage'}">to apple</router-link>
+    <router-link :to="{path:'banana'}">to banana</router-link>
+    <router-link :to="{path:'red'}">to red apple</router-link>
+    <router-link :to="{path:'green'}">to green apple</router-link>-->
+
+    <!--vuex-->
+  <h1>TotalPrice {{ totalPrice }}</h1>
+    <book></book>
+    <pen></pen>
+
   </div>
 </template>
 
 <script>
   import Vue from 'vue'
   import comA from './components/a.vue'
+  import comB from './components/b.vue'
+  import book from './components/book.vue'
+  import pen from './components/pen.vue'
 export default {
   name: 'app',
  components:{
-   comA
+   comA,
+   comB,
+   book,
+   pen,
  },
+  directives:{
+    color:function (el,binding) {
+      el.style.color = binding.value
+    },
+    focus:{
+      inserted(el,binding){
+        el.focus();
+      }
+    }
+  },
   data(){
       return{
+        currentView:'com-a',
+        show:true,
+        comToRender:'com-a',
         selectionOption:[
           {
               text:'milk',
@@ -90,6 +160,10 @@ export default {
   computed:{
     myValueWithNum () {
         return this.myValue.replace(/\d/g,'')
+    },
+    totalPrice(){
+        /*return this.$store.state.totalPrice*/
+      return this.$store.getters.getTotal
     }
   },
   watch:{
@@ -127,6 +201,37 @@ export default {
     },
     tellUser() {
         alert('list change!')
+    },
+    toggleCom(){
+        if (this.currentView === "com-a"){
+            this.currentView = 'com-b'
+        }else{
+            this.currentView = 'com-a'
+        }
+    },
+    beforeEnter:function (el) {
+      $(el).css({
+        left:'-500px',
+        opacity:0,
+      })
+    },
+    enter:function (el,done) {
+      $(el).animate({
+        left:'0',
+        opacity:1
+      },{
+        duration:1500,
+        complete:done,
+      });
+    },
+    leave:function (el,done) {
+      $(el).animate({
+        left:'500px',
+        opacity:0
+      },{
+        duration:1500,
+        complete:done,
+      });
     }
   },
 }
@@ -141,4 +246,28 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+.transbox{
+  width: 100px;
+  height: 50px;
+  position: relative;
+  top: 300px;
+  left: 300px;
+}
+.fade-enter-active,.fade-leave-active{
+  transition: all .5s ease-out;
+}
+.fade-enter{
+  transform:translateY(-500px);
+  opacity:0;
+}
+.fade-leave-active{
+  transform:translateY(800px);
+  opacity:0;
+}
+.animate-p{
+  position: absolute;
+  top:0;
+  left:0;
+}
+
 </style>
